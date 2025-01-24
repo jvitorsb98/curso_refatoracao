@@ -15,19 +15,16 @@ public class Adocao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
     @Column(name = "data")
     private LocalDateTime data;
 
-    @NotNull
     @ManyToOne
     @JsonBackReference("tutor_adocoes")
     @JoinColumn(name = "tutor_id")
     private Tutor tutor;
 
-    @NotNull
     @OneToOne
     @JoinColumn(name = "pet_id")
     @JsonManagedReference("adocao_pets")
