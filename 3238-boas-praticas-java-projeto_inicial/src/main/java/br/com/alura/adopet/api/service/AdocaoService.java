@@ -58,12 +58,8 @@ public class AdocaoService {
 
         validacaoSolicitacaoAdocaoList.forEach(v -> v.validar(solicitacaoAdocaoDTO));
 
-        Adocao adocao = new Adocao();
-        adocao.setData(LocalDateTime.now());
-        adocao.setPet(pet);
-        adocao.setTutor(tutor);
-        adocao.setMotivo(solicitacaoAdocaoDTO.motivo());
-        adocao.setStatus(StatusAdocao.AGUARDANDO_AVALIACAO);
+        Adocao adocao = new Adocao(tutor,pet, solicitacaoAdocaoDTO.motivo());
+
         repository.save(adocao);
 
         emailService.send(adocao.getPet().getAbrigo().getEmail() ,
@@ -74,7 +70,7 @@ public class AdocaoService {
 
     public void aprovar(AprovacaoAdocaoDTO aprovacaoAdocaoDTO){
         Adocao adocao = repository.getReferenceById(aprovacaoAdocaoDTO.idAdocao());
-        adocao.setStatus(StatusAdocao.APROVADO);
+        adocao.aprovar();
         emailService.send(adocao.getTutor().getEmail(),
                 "Adoção aprovada",
                 "Parabéns " +adocao.getTutor().getNome() +"!\n\nSua adoção do pet " +adocao.getPet().getNome() +", solicitada em " +adocao.getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) +", foi aprovada.\nFavor entrar em contato com o abrigo " +adocao.getPet().getAbrigo().getNome() +" para agendar a busca do seu pet.");
@@ -82,7 +78,7 @@ public class AdocaoService {
 
     public void reprovar(ReprovacaoAdocaoDTO reprovacaoAdocao){
         Adocao adocao = repository.getReferenceById(reprovacaoAdocao.idAdocao());
-        adocao.setStatus(StatusAdocao.REPROVADO);
+        adocao.reprovar(reprovacaoAdocao.justificativa());
         emailService.send(adocao.getTutor().getEmail(),
                 "Adoção reprovada",
                 "Olá " +adocao.getTutor().getNome() +"!\n\nInfelizmente sua adoção do pet " +adocao.getPet().getNome() +", solicitada em " +adocao.getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) +", foi reprovada pelo abrigo " +adocao.getPet().getAbrigo().getNome() +" com a seguinte justificativa: " +adocao.getJustificativaStatus());
