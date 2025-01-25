@@ -1,6 +1,5 @@
 package br.com.alura.adopet.api.repository;
 
-import br.com.alura.adopet.api.dto.pets.details.PetDetailsDTO;
 import br.com.alura.adopet.api.model.Abrigo;
 import br.com.alura.adopet.api.model.Pet;
 import org.springframework.data.domain.Page;
@@ -10,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface AbrigoRepository extends JpaRepository<Abrigo, Long> {
+
     boolean existsByNome(String nome);
 
     boolean existsByTelefone(String telefone);
@@ -18,12 +18,10 @@ public interface AbrigoRepository extends JpaRepository<Abrigo, Long> {
 
     Abrigo findByNome(String nome);
 
-
-    @Query("SELECT p FROM pets p WHERE p.abrigo_id = :abrigoID ")
+    @Query("SELECT p FROM Pet p WHERE p.abrigo.id = :abrigoID")
     Page<Pet> findPetsByAbrigoWithId(@Param("abrigoID") Long abrigoID, Pageable pageable);
 
-    @Query("SELECT p FROM pets p WHERE  p.abrigo.nome = :nomeOuIdAbrigo")
-    Page<Pet> findPetsByAbrigoWithName(String nomeOuIdAbrigo, Pageable pageable);
-
+    @Query("SELECT p FROM Pet p WHERE p.abrigo.nome = :nomeAbrigo")
+    Page<Pet> findPetsByAbrigoWithName(@Param("nomeAbrigo") String nomeAbrigo, Pageable pageable);
 
 }

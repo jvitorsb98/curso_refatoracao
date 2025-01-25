@@ -9,6 +9,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.math.BigDecimal;
+
 public record PetDetailsDTO(
 
         @Enumerated(EnumType.STRING)
@@ -22,7 +24,7 @@ public record PetDetailsDTO(
 
         String cor,
 
-        Float peso,
+        BigDecimal peso,
 
         Boolean adotado,
 
