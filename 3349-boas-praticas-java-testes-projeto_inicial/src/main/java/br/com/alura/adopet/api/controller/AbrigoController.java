@@ -35,12 +35,8 @@ public class AbrigoController {
     @PostMapping
     @Transactional
     public ResponseEntity<String> cadastrar(@RequestBody @Valid CadastroAbrigoDto dto) {
-        try {
-            abrigoService.cadatrar(dto);
-            return ResponseEntity.ok().build();
-        } catch (ValidacaoException exception) {
-            return ResponseEntity.badRequest().body(exception.getMessage());
-        }
+        abrigoService.cadatrar(dto);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{idOuNome}/pets")
