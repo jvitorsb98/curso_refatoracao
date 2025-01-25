@@ -1,4 +1,4 @@
-package br.com.alura.adopet.api.service;
+package br.com.alura.adopet.api.service.email;
 
 import br.com.alura.adopet.api.model.Adocao;
 import org.springframework.beans.factory.annotation.Autowired;

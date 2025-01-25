@@ -1,12 +1,6 @@
 package br.com.alura.adopet.api.model;
 
-import br.com.alura.adopet.api.dto.SolicitacaoAdocaoDTO;
-import br.com.alura.adopet.api.repository.AdocaoRepository;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -47,12 +41,17 @@ public class Adocao {
 
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Adocao adocao = (Adocao) o;
         return Objects.equals(id, adocao.id);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     @Override
