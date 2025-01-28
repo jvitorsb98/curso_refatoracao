@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbrigoService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">adopet-api</a> &gt; <a href="index.source.html" class="el_package">br.com.alura.adopet.api.service.abrigo</a> &gt; <span class="el_source">AbrigoService.java</span></div><h1>AbrigoService.java</h1><pre class="source lang-java linenums">package br.com.alura.adopet.api.service.abrigo;
+
+import br.com.alura.adopet.api.dto.abrigo.details.AbrigoDetailsDTO;
+import br.com.alura.adopet.api.dto.abrigo.register.AbrigoRegisterDTO;
+import br.com.alura.adopet.api.dto.pets.details.PetDetailsDTO;
+import br.com.alura.adopet.api.dto.pets.register.RegistroPetDTO;
+import br.com.alura.adopet.api.model.Abrigo;
+import br.com.alura.adopet.api.model.Pet;
+import br.com.alura.adopet.api.repository.AbrigoRepository;
+import br.com.alura.adopet.api.repository.PetRepository;
+import br.com.alura.adopet.api.service.abrigo.validacoes.register.ValidacaoCadastroAbrigo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * Serviço responsável pelo gerenciamento de abrigos e pets associados.
+ *
+ * &lt;p&gt;Essa classe oferece funcionalidades para registrar abrigos e pets, listar abrigos e pets, e realizar validações
+ * durante o processo de cadastro de abrigos. Além disso, permite associar pets a um abrigo.&lt;/p&gt;
+ */
+@Service
+<span class="fc" id="L26">public class AbrigoService {</span>
+
+    @Autowired
+    private List&lt;ValidacaoCadastroAbrigo&gt; validacaoCadastroAbrigoList;
+
+    @Autowired
+    private AbrigoRepository abrigoRepository;
+
+    @Autowired
+    private PetRepository petRepository;
+
+    /**
+     * Registra um novo abrigo no sistema, realizando as validações antes do cadastro.
+     *
+     * &lt;p&gt;Valida os dados do abrigo antes de salvá-lo no banco de dados. Caso algum dado esteja incorreto, uma exceção
+     * será lançada.&lt;/p&gt;
+     *
+     * @param abrigoRegisterDTO O DTO contendo os dados do abrigo a ser registrado.
+     */
+    public void registrar(AbrigoRegisterDTO abrigoRegisterDTO) {
+<span class="pc" id="L46">        validacaoCadastroAbrigoList.forEach(v -&gt; v.validation(abrigoRegisterDTO));</span>
+<span class="fc" id="L47">        Abrigo abrigo = new Abrigo(abrigoRegisterDTO);</span>
+<span class="fc" id="L48">        abrigoRepository.save(abrigo);</span>
+<span class="fc" id="L49">    }</span>
+
+    /**
+     * Lista os abrigos cadastrados no sistema com paginação.
+     *
+     * @param pageable A informação de paginação.
+     * @return Uma página de objetos {@link AbrigoDetailsDTO} contendo os dados dos abrigos.
+     */
+    public Page&lt;AbrigoDetailsDTO&gt; listar(Pageable pageable) {
+<span class="fc" id="L58">        return abrigoRepository.findAll(pageable).map(AbrigoDetailsDTO::new);</span>
+    }
+
+    /**
+     * Lista os pets associados a um abrigo específico, filtrando por nome ou ID do abrigo.
+     *
+     * &lt;p&gt;O filtro pode ser feito utilizando o nome ou o ID do abrigo. O resultado será uma lista de pets
+     * pertencentes ao abrigo informado.&lt;/p&gt;
+     *
+     * @param pageable A informação de paginação.
+     * @param nomeOuIdAbrigo O nome ou ID do abrigo.
+     * @return Uma página de objetos {@link PetDetailsDTO} contendo os dados dos pets associados ao abrigo.
+     */
+    public Page&lt;PetDetailsDTO&gt; listarPets(Pageable pageable, String nomeOuIdAbrigo) {
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if (nomeOuIdAbrigo.matches(&quot;\\d+&quot;)) {</span>
+<span class="fc" id="L73">            return abrigoRepository.findPetsByAbrigoWithId(Long.parseLong(nomeOuIdAbrigo), pageable).map(PetDetailsDTO::new);</span>
+        } else {
+<span class="fc" id="L75">            return abrigoRepository.findPetsByAbrigoWithName(nomeOuIdAbrigo, pageable).map(PetDetailsDTO::new);</span>
+        }
+    }
+
+    /**
+     * Registra um novo pet associado a um abrigo específico.
+     *
+     * &lt;p&gt;Associa o pet ao abrigo encontrado, seja pelo nome ou ID, e realiza o cadastro do pet no sistema.&lt;/p&gt;
+     *
+     * @param registroPetDTO O DTO contendo os dados do pet a ser registrado.
+     * @param nomeOuIdAbrigo O nome ou ID do abrigo ao qual o pet será associado.
+     */
+    public void registrarPet(RegistroPetDTO registroPetDTO, String nomeOuIdAbrigo) {
+<span class="fc" id="L88">        Abrigo abrigo = null;</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (nomeOuIdAbrigo.matches(&quot;\\d+&quot;)) {</span>
+<span class="fc" id="L90">            abrigo = abrigoRepository.getReferenceById(Long.parseLong(nomeOuIdAbrigo));</span>
+        } else {
+<span class="fc" id="L92">            abrigo = abrigoRepository.findByNome(nomeOuIdAbrigo);</span>
+        }
+<span class="fc" id="L94">        Pet pet = new Pet(registroPetDTO, abrigo);</span>
+<span class="fc" id="L95">        petRepository.save(pet);</span>
+<span class="fc" id="L96">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

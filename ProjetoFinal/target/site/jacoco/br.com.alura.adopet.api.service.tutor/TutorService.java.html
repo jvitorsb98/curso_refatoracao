@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TutorService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">adopet-api</a> &gt; <a href="index.source.html" class="el_package">br.com.alura.adopet.api.service.tutor</a> &gt; <span class="el_source">TutorService.java</span></div><h1>TutorService.java</h1><pre class="source lang-java linenums">package br.com.alura.adopet.api.service.tutor;
+
+import br.com.alura.adopet.api.dto.tutor.atualizar.AtualizarTutorDTO;
+import br.com.alura.adopet.api.dto.tutor.register.TutorRegistroDTO;
+import br.com.alura.adopet.api.model.Tutor;
+import br.com.alura.adopet.api.repository.TutorRepository;
+import br.com.alura.adopet.api.service.tutor.validacoes.atualizar.ValidacaoAtuaizacaoTutor;
+import br.com.alura.adopet.api.service.tutor.validacoes.register.ValidacaoRegistroTutor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * Serviço responsável pela lógica de negócio relacionada ao cadastro e atualização
+ * de tutores. Inclui validações antes de persistir os dados no repositório.
+ *
+ * &lt;p&gt;Esta classe fornece métodos para registrar um novo tutor e para atualizar
+ * os dados de um tutor existente. Antes de realizar essas operações, são
+ * executadas as validações necessárias para garantir que as informações
+ * fornecidas estão corretas e não violam regras de negócio.&lt;/p&gt;
+ */
+@Service
+<span class="fc" id="L24">public class TutorService {</span>
+
+    @Autowired
+    private TutorRepository tutorRepository;
+
+    @Autowired
+    private List&lt;ValidacaoRegistroTutor&gt; validacaoRegistroTutorList;
+
+    @Autowired
+    private List&lt;ValidacaoAtuaizacaoTutor&gt; validacaoAtuaizacaoTutorList;
+
+    /**
+     * Registra um novo tutor no sistema.
+     *
+     * &lt;p&gt;Antes de persistir o tutor, são realizadas as validações definidas
+     * nas implementações da interface {@link ValidacaoRegistroTutor}.&lt;/p&gt;
+     *
+     * @param tutorRegistroDTO Dados do tutor a serem registrados.
+     */
+    public void registro(TutorRegistroDTO tutorRegistroDTO){
+<span class="pc" id="L44">        validacaoRegistroTutorList.forEach(v -&gt; v.validation(tutorRegistroDTO));</span>
+<span class="fc" id="L45">        Tutor tutor = new Tutor(tutorRegistroDTO);</span>
+<span class="fc" id="L46">        tutorRepository.save(tutor);</span>
+<span class="fc" id="L47">    }</span>
+
+    /**
+     * Atualiza os dados de um tutor existente.
+     *
+     * &lt;p&gt;Antes de realizar a atualização, são executadas as validações
+     * definidas nas implementações da interface {@link ValidacaoAtuaizacaoTutor}.&lt;/p&gt;
+     *
+     * @param idTutor Identificador do tutor a ser atualizado.
+     * @param atualizarTutorDTO Dados atualizados do tutor.
+     */
+    public void atualizar(Long idTutor, AtualizarTutorDTO atualizarTutorDTO) {
+<span class="pc" id="L59">        validacaoAtuaizacaoTutorList.forEach(v -&gt; v.validacao(idTutor));</span>
+<span class="fc" id="L60">        Tutor tutor = tutorRepository.getReferenceById(idTutor);</span>
+<span class="fc" id="L61">        tutor.atualiza(atualizarTutorDTO);</span>
+<span class="fc" id="L62">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

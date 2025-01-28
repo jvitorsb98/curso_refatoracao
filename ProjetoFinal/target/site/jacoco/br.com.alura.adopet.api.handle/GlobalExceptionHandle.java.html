@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GlobalExceptionHandle.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">adopet-api</a> &gt; <a href="index.source.html" class="el_package">br.com.alura.adopet.api.handle</a> &gt; <span class="el_source">GlobalExceptionHandle.java</span></div><h1>GlobalExceptionHandle.java</h1><pre class="source lang-java linenums">package br.com.alura.adopet.api.handle;
+
+import br.com.alura.adopet.api.validations.ValidacaoException;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.LocalDateTime;
+
+/**
+ * Classe responsável por tratar exceções globais na aplicação.
+ * Todas as exceções tratadas nesta classe serão interceptadas automaticamente em toda a aplicação.
+ */
+@RestControllerAdvice
+<span class="fc" id="L17">public class GlobalExceptionHandle {</span>
+
+    /**
+     * Trata exceções do tipo {@link ValidacaoException}.
+     * Essas exceções geralmente indicam erros de validação em operações específicas.
+     *
+     * @param e Exceção capturada.
+     * @return Uma {@link ResponseEntity} contendo os detalhes do erro.
+     */
+    @ExceptionHandler(ValidacaoException.class)
+    public ResponseEntity&lt;ResponseError&gt; adocaoException(ValidacaoException e) {
+<span class="fc" id="L28">        ResponseError response = new ResponseError(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());</span>
+<span class="fc" id="L29">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);</span>
+    }
+
+    /**
+     * Trata exceções genéricas não específicas.
+     * Serve como fallback para capturar erros não mapeados por outros handlers.
+     *
+     * @param e Exceção capturada.
+     * @return Uma {@link ResponseEntity} contendo os detalhes do erro.
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity&lt;ResponseError&gt; trataException(Exception e) {
+<span class="fc" id="L41">        ResponseError response = new ResponseError(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());</span>
+<span class="fc" id="L42">        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

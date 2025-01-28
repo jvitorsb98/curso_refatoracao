@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ValidacaoEmailJaCadastradoAbrigo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">adopet-api</a> &gt; <a href="index.source.html" class="el_package">br.com.alura.adopet.api.service.abrigo.validacoes.register</a> &gt; <span class="el_source">ValidacaoEmailJaCadastradoAbrigo.java</span></div><h1>ValidacaoEmailJaCadastradoAbrigo.java</h1><pre class="source lang-java linenums">package br.com.alura.adopet.api.service.abrigo.validacoes.register;
+
+import br.com.alura.adopet.api.dto.abrigo.register.AbrigoRegisterDTO;
+import br.com.alura.adopet.api.repository.AbrigoRepository;
+import br.com.alura.adopet.api.validations.ValidacaoException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+/**
+ * Classe responsável por validar se o e-mail informado para o cadastro de um abrigo já está cadastrado.
+ *
+ * &lt;p&gt;Essa classe verifica se o e-mail fornecido no DTO de registro já foi utilizado em outro abrigo.
+ * Se o e-mail já estiver cadastrado, uma exceção {@link ValidacaoException} será lançada.&lt;/p&gt;
+ *
+ * @see ValidacaoCadastroAbrigo
+ */
+@Component
+<span class="fc" id="L18">public class ValidacaoEmailJaCadastradoAbrigo implements ValidacaoCadastroAbrigo {</span>
+
+    @Autowired
+    private AbrigoRepository abrigoRepository;
+
+    /**
+     * Valida se o e-mail fornecido no DTO de registro já está cadastrado.
+     *
+     * &lt;p&gt;Se o e-mail já estiver associado a outro abrigo, uma {@link ValidacaoException} será lançada
+     * com a mensagem informando que o e-mail já está cadastrado.&lt;/p&gt;
+     *
+     * @param abrigoRegisterDTO O objeto DTO contendo os dados do abrigo a ser registrado, incluindo o e-mail.
+     * @throws ValidacaoException Se o e-mail já estiver cadastrado para outro abrigo.
+     */
+    @Override
+    public void validation(AbrigoRegisterDTO abrigoRegisterDTO) {
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (abrigoRepository.existsByEmail(abrigoRegisterDTO.email())) {</span>
+<span class="fc" id="L35">            throw new ValidacaoException(&quot;Email já cadastrado para outro abrigo&quot;);</span>
+        }
+<span class="fc" id="L37">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

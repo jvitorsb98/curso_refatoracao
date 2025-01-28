@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmailService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">adopet-api</a> &gt; <a href="index.source.html" class="el_package">br.com.alura.adopet.api.service.email</a> &gt; <span class="el_source">EmailService.java</span></div><h1>EmailService.java</h1><pre class="source lang-java linenums">package br.com.alura.adopet.api.service.email;
+
+import br.com.alura.adopet.api.model.Adocao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Service;
+
+/**
+ * Serviço responsável pelo envio de e-mails.
+ *
+ * &lt;p&gt;Esta classe permite o envio de e-mails simples utilizando o {@link JavaMailSender}. O e-mail é configurado
+ * com o remetente, destinatário, assunto e corpo da mensagem, sendo enviado através do serviço de e-mail.&lt;/p&gt;
+ */
+@Service
+<span class="fc" id="L16">public class EmailService {</span>
+
+    @Autowired
+    private JavaMailSender emailSender;
+
+    /**
+     * Envia um e-mail com os dados fornecidos.
+     *
+     * &lt;p&gt;Este método permite o envio de um e-mail simples, com o remetente fixo como &quot;adopet@email.com.br&quot;,
+     * e o assunto e corpo definidos pelos parâmetros fornecidos.&lt;/p&gt;
+     *
+     * @param to O destinatário do e-mail.
+     * @param subject O assunto do e-mail.
+     * @param message O corpo do e-mail.
+     */
+    public void send(String to, String subject, String message) {
+<span class="fc" id="L32">        SimpleMailMessage email = new SimpleMailMessage();</span>
+<span class="fc" id="L33">        email.setFrom(&quot;adopet@email.com.br&quot;);</span>
+<span class="fc" id="L34">        email.setTo(to);</span>
+<span class="fc" id="L35">        email.setSubject(subject);</span>
+<span class="fc" id="L36">        email.setText(message);</span>
+<span class="fc" id="L37">        emailSender.send(email);</span>
+<span class="fc" id="L38">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

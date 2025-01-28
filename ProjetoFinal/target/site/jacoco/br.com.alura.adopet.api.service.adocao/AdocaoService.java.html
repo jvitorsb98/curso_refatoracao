@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdocaoService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">adopet-api</a> &gt; <a href="index.source.html" class="el_package">br.com.alura.adopet.api.service.adocao</a> &gt; <span class="el_source">AdocaoService.java</span></div><h1>AdocaoService.java</h1><pre class="source lang-java linenums">package br.com.alura.adopet.api.service.adocao;
+
+import br.com.alura.adopet.api.dto.adocao.AprovacaoAdocaoDTO;
+import br.com.alura.adopet.api.dto.adocao.ReprovacaoAdocaoDTO;
+import br.com.alura.adopet.api.dto.adocao.SolicitacaoAdocaoDTO;
+import br.com.alura.adopet.api.model.Adocao;
+import br.com.alura.adopet.api.model.Pet;
+import br.com.alura.adopet.api.model.Tutor;
+import br.com.alura.adopet.api.repository.AdocaoRepository;
+import br.com.alura.adopet.api.repository.PetRepository;
+import br.com.alura.adopet.api.repository.TutorRepository;
+import br.com.alura.adopet.api.service.adocao.validacoes.aprovar.ValidacaoSolicitacaoAprovar;
+import br.com.alura.adopet.api.service.adocao.validacoes.reprovar.ValidacaoSolicitacaoReprovar;
+import br.com.alura.adopet.api.service.email.EmailService;
+import br.com.alura.adopet.api.service.adocao.validacoes.register.*;
+import jakarta.validation.ValidationException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+@Service
+<span class="fc" id="L24">public class AdocaoService {</span>
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private AdocaoRepository repository;
+
+    @Autowired
+    private PetRepository petRepository;
+
+    @Autowired
+    private TutorRepository tutorRepository;
+
+    @Autowired
+    private List&lt;ValidacaoSolicitacaoAdocao&gt; validacaoSolicitacaoAdocaoList;
+
+
+    @Autowired
+    private List&lt;ValidacaoSolicitacaoAprovar&gt; validacaoSolicitacaoAprovarList;
+
+    @Autowired
+    private List&lt;ValidacaoSolicitacaoReprovar&gt; validacaoSolicitacaoReprovarList;
+
+    public void solicitar(SolicitacaoAdocaoDTO solicitacaoAdocaoDTO) throws ValidationException {
+        // Validação das solicitações de adoção
+<span class="pc" id="L50">        validacaoSolicitacaoAdocaoList.forEach(v -&gt; v.validar(solicitacaoAdocaoDTO));</span>
+
+        // Verificação do Pet e Tutor
+<span class="fc" id="L53">        Pet pet = petRepository.getReferenceById(solicitacaoAdocaoDTO.idPet());</span>
+<span class="fc" id="L54">        Tutor tutor = tutorRepository.getReferenceById(solicitacaoAdocaoDTO.idTutor());</span>
+        // Criação e salvamento da adoção
+<span class="fc" id="L56">        Adocao adocao = new Adocao(tutor, pet, solicitacaoAdocaoDTO.motivo());</span>
+<span class="fc" id="L57">        repository.save(adocao);</span>
+
+        // Envio de e-mail de solicitação
+<span class="fc" id="L60">        enviarEmailAprovacaoReprovacao(adocao, &quot;Solicitação de adoção&quot;,</span>
+<span class="fc" id="L61">                &quot;Olá &quot; + adocao.getPet().getAbrigo().getNome() + &quot;!\n\nUma solicitação de adoção foi registrada hoje para o pet: &quot;</span>
+<span class="fc" id="L62">                        + adocao.getPet().getNome() + &quot;. \nFavor avaliar para aprovação ou reprovação.&quot;);</span>
+<span class="fc" id="L63">    }</span>
+
+    public void aprovar(AprovacaoAdocaoDTO aprovacaoAdocaoDTO) {
+
+<span class="pc" id="L67">        validacaoSolicitacaoAprovarList.forEach(v -&gt; v.validar(aprovacaoAdocaoDTO));</span>
+
+<span class="fc" id="L69">        Adocao adocao = repository.getReferenceById(aprovacaoAdocaoDTO.idAdocao());</span>
+<span class="fc" id="L70">        adocao.aprovar();</span>
+
+        // Envio de e-mail após aprovação
+<span class="fc" id="L73">        enviarEmailAprovacaoReprovacao(adocao, &quot;Adoção aprovada&quot;,</span>
+<span class="fc" id="L74">                &quot;Parabéns &quot; + adocao.getTutor().getNome() + &quot;!\n\nSua adoção do pet &quot; + adocao.getPet().getNome()</span>
+<span class="fc" id="L75">                        + &quot;, solicitada em &quot; + adocao.getData().format(DateTimeFormatter.ofPattern(&quot;dd/MM/yyyy HH:mm:ss&quot;))</span>
+<span class="fc" id="L76">                        + &quot;, foi aprovada.\nFavor entrar em contato com o abrigo &quot; + adocao.getPet().getAbrigo().getNome()</span>
+                        + &quot; para agendar a busca do seu pet.&quot;);
+<span class="fc" id="L78">    }</span>
+
+    public void reprovar(ReprovacaoAdocaoDTO reprovacaoAdocao) {
+
+<span class="pc" id="L82">        validacaoSolicitacaoReprovarList.forEach(v -&gt; v.validar(reprovacaoAdocao));</span>
+
+<span class="fc" id="L84">        Adocao adocao = repository.getReferenceById(reprovacaoAdocao.idAdocao());</span>
+<span class="fc" id="L85">        adocao.reprovar(reprovacaoAdocao.justificativa());</span>
+
+        // Envio de e-mail após reprovação
+<span class="fc" id="L88">        enviarEmailAprovacaoReprovacao(adocao, &quot;Adoção reprovada&quot;,</span>
+<span class="fc" id="L89">                &quot;Olá &quot; + adocao.getTutor().getNome() + &quot;!\n\nInfelizmente sua adoção do pet &quot; + adocao.getPet().getNome()</span>
+<span class="fc" id="L90">                        + &quot;, solicitada em &quot; + adocao.getData().format(DateTimeFormatter.ofPattern(&quot;dd/MM/yyyy HH:mm:ss&quot;))</span>
+<span class="fc" id="L91">                        + &quot;, foi reprovada pelo abrigo &quot; + adocao.getPet().getAbrigo().getNome() + &quot; com a seguinte justificativa: &quot;</span>
+<span class="fc" id="L92">                        + adocao.getJustificativaStatus());</span>
+<span class="fc" id="L93">    }</span>
+
+    /**
+     * Método auxiliar para enviar e-mails de aprovação ou reprovação.
+     *
+     * @param adocao Adoção para a qual o e-mail será enviado.
+     * @param assunto Assunto do e-mail.
+     * @param mensagem Corpo do e-mail.
+     */
+    private void enviarEmailAprovacaoReprovacao(Adocao adocao, String assunto, String mensagem) {
+<span class="fc" id="L103">        emailService.send(adocao.getPet().getAbrigo().getEmail(), assunto, mensagem);</span>
+<span class="fc" id="L104">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

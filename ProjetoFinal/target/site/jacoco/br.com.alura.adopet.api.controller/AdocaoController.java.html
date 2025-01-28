@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdocaoController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">adopet-api</a> &gt; <a href="index.source.html" class="el_package">br.com.alura.adopet.api.controller</a> &gt; <span class="el_source">AdocaoController.java</span></div><h1>AdocaoController.java</h1><pre class="source lang-java linenums">package br.com.alura.adopet.api.controller;
+
+import br.com.alura.adopet.api.dto.adocao.AprovacaoAdocaoDTO;
+import br.com.alura.adopet.api.dto.adocao.ReprovacaoAdocaoDTO;
+import br.com.alura.adopet.api.dto.adocao.SolicitacaoAdocaoDTO;
+import br.com.alura.adopet.api.repository.AdocaoRepository;
+import br.com.alura.adopet.api.service.adocao.AdocaoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * Controller responsável por gerenciar adoções.
+ */
+@RestController
+@RequestMapping(&quot;/adocoes&quot;)
+<span class="fc" id="L25">public class AdocaoController {</span>
+
+    @Autowired
+    private AdocaoRepository repository;
+
+    @Autowired
+    private AdocaoService adocaoService;
+
+    /**
+     * Endpoint para solicitar uma adoção.
+     *
+     * @param solicitacaoAdocaoDTO Dados da solicitação de adoção.
+     * @return Resposta HTTP 200 (OK) se a solicitação for realizada com sucesso.
+     */
+    @Operation(summary = &quot;Solicitar adoção&quot;, description = &quot;Cria uma nova solicitação de adoção.&quot;)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Solicitação criada com sucesso&quot;),
+            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Dados inválidos&quot;, content = @Content),
+            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Erro interno do servidor&quot;, content = @Content)
+    })
+    @PostMapping
+    @Transactional
+    public ResponseEntity&lt;String&gt; solicitar(
+            @RequestBody(description = &quot;Dados para solicitar adoção&quot;,
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = SolicitacaoAdocaoDTO.class)))
+            @Valid SolicitacaoAdocaoDTO solicitacaoAdocaoDTO) {
+<span class="fc" id="L52">        this.adocaoService.solicitar(solicitacaoAdocaoDTO);</span>
+<span class="fc" id="L53">        return ResponseEntity.ok().build();</span>
+    }
+
+    /**
+     * Endpoint para aprovar uma adoção.
+     *
+     * @param aprovacaoAdocaoDTO Dados para aprovação da adoção.
+     * @return Resposta HTTP 200 (OK) se a adoção for aprovada com sucesso.
+     */
+    @Operation(summary = &quot;Aprovar adoção&quot;, description = &quot;Aprova uma solicitação de adoção pendente.&quot;)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Adoção aprovada com sucesso&quot;),
+            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Dados inválidos&quot;, content = @Content),
+            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Erro interno do servidor&quot;, content = @Content)
+    })
+    @PutMapping(&quot;/aprovar&quot;)
+    @Transactional
+    public ResponseEntity&lt;String&gt; aprovar(
+            @RequestBody(description = &quot;Dados para aprovação da adoção&quot;,
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = AprovacaoAdocaoDTO.class)))
+            @Valid AprovacaoAdocaoDTO aprovacaoAdocaoDTO) {
+<span class="fc" id="L75">        this.adocaoService.aprovar(aprovacaoAdocaoDTO);</span>
+<span class="fc" id="L76">        return ResponseEntity.ok().build();</span>
+    }
+
+    /**
+     * Endpoint para reprovar uma adoção.
+     *
+     * @param reprovacaoAdocaoDTO Dados para reprovação da adoção.
+     * @return Resposta HTTP 200 (OK) se a adoção for reprovada com sucesso.
+     */
+    @Operation(summary = &quot;Reprovar adoção&quot;, description = &quot;Reprova uma solicitação de adoção pendente.&quot;)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Adoção reprovada com sucesso&quot;),
+            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Dados inválidos&quot;, content = @Content),
+            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Erro interno do servidor&quot;, content = @Content)
+    })
+    @PutMapping(&quot;/reprovar&quot;)
+    @Transactional
+    public ResponseEntity&lt;String&gt; reprovar(
+            @RequestBody(description = &quot;Dados para reprovação da adoção&quot;,
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = ReprovacaoAdocaoDTO.class)))
+            @Valid ReprovacaoAdocaoDTO reprovacaoAdocaoDTO) {
+<span class="fc" id="L98">        this.adocaoService.reprovar(reprovacaoAdocaoDTO);</span>
+<span class="fc" id="L99">        return ResponseEntity.ok().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

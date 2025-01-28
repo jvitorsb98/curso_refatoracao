@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Pet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">adopet-api</a> &gt; <a href="index.source.html" class="el_package">br.com.alura.adopet.api.model</a> &gt; <span class="el_source">Pet.java</span></div><h1>Pet.java</h1><pre class="source lang-java linenums">package br.com.alura.adopet.api.model;
+
+import br.com.alura.adopet.api.dto.pets.register.RegistroPetDTO;
+import br.com.alura.adopet.api.model.enums.TipoPet;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+
+/**
+ * Representa um pet no sistema Adopet.
+ *
+ * &lt;p&gt;Essa entidade é responsável por armazenar informações sobre os pets,
+ * incluindo tipo, nome, raça, idade, cor, peso, status de adoção e o abrigo ao qual pertence.&lt;/p&gt;
+ *
+ * &lt;p&gt;Utiliza anotações do JPA para mapeamento com o banco de dados e Lombok para simplificação do código.&lt;/p&gt;
+ */
+@Data
+@NoArgsConstructor
+@Entity
+@Table(name = &quot;pets&quot;)
+public class Pet {
+
+    /**
+     * Identificador único do pet.
+     * Gerado automaticamente pelo banco de dados.
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    /**
+     * Tipo do pet (por exemplo, CÃO ou GATO).
+     * Representado pela enum {@link TipoPet}.
+     */
+    @Enumerated(EnumType.STRING)
+    private TipoPet tipo;
+
+    /**
+     * Nome do pet.
+     */
+    private String nome;
+
+    /**
+     * Raça do pet.
+     */
+    private String raca;
+
+    /**
+     * Idade do pet em anos.
+     */
+    private Integer idade;
+
+    /**
+     * Cor do pet.
+     */
+    private String cor;
+
+    /**
+     * Peso do pet em quilogramas.
+     */
+    private BigDecimal peso;
+
+    /**
+     * Indica se o pet já foi adotado.
+     */
+    private Boolean adotado;
+
+    /**
+     * Abrigo ao qual o pet pertence.
+     * Relacionamento muitos-para-um (ManyToOne).
+     */
+    @ManyToOne
+    private Abrigo abrigo;
+
+    /**
+     * Adoção associada ao pet.
+     * Relacionamento um-para-um (OneToOne).
+     */
+    @OneToOne(mappedBy = &quot;pet&quot;)
+    private Adocao adocao;
+
+    /**
+     * Construtor que inicializa um pet com base em um DTO de registro e um abrigo.
+     *
+     * @param registroPetDTO Objeto DTO contendo as informações de registro do pet.
+     * @param abrigo Abrigo ao qual o pet será associado.
+     */
+<span class="fc" id="L90">    public Pet(RegistroPetDTO registroPetDTO, Abrigo abrigo) {</span>
+<span class="fc" id="L91">        this.tipo = registroPetDTO.tipo();</span>
+<span class="fc" id="L92">        this.raca = registroPetDTO.raca();</span>
+<span class="fc" id="L93">        this.nome = registroPetDTO.nome();</span>
+<span class="fc" id="L94">        this.cor = registroPetDTO.cor();</span>
+<span class="fc" id="L95">        this.peso = new BigDecimal(registroPetDTO.peso());</span>
+<span class="fc" id="L96">        this.adotado = false; // Inicializa como não adotado</span>
+<span class="fc" id="L97">        this.abrigo = abrigo;</span>
+<span class="fc" id="L98">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

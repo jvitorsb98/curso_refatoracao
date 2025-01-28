@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ValidacaoTelefoneRegistradoTutor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">adopet-api</a> &gt; <a href="index.source.html" class="el_package">br.com.alura.adopet.api.service.tutor.validacoes.register</a> &gt; <span class="el_source">ValidacaoTelefoneRegistradoTutor.java</span></div><h1>ValidacaoTelefoneRegistradoTutor.java</h1><pre class="source lang-java linenums">package br.com.alura.adopet.api.service.tutor.validacoes.register;
+
+import br.com.alura.adopet.api.dto.tutor.register.TutorRegistroDTO;
+import br.com.alura.adopet.api.repository.TutorRepository;
+import br.com.alura.adopet.api.validations.ValidacaoException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+/**
+ * Validação para garantir que o telefone informado para o registro do tutor
+ * não esteja cadastrado em outro tutor.
+ *
+ * &lt;p&gt;Esta classe implementa a interface {@link ValidacaoRegistroTutor} e
+ * realiza a verificação de que o telefone fornecido no registro de um tutor
+ * não está presente em outros registros de tutor no banco de dados.&lt;/p&gt;
+ *
+ * &lt;p&gt;Se o telefone já estiver cadastrado, uma exceção {@link ValidacaoException}
+ * será lançada com a mensagem apropriada.&lt;/p&gt;
+ */
+@Component
+<span class="fc" id="L21">public class ValidacaoTelefoneRegistradoTutor implements ValidacaoRegistroTutor {</span>
+
+    @Autowired
+    private TutorRepository tutorRepository;
+
+    /**
+     * Valida o telefone do {@link TutorRegistroDTO} para garantir que não
+     * esteja registrado em outro tutor.
+     *
+     * @param tutorRegistroDTO Dados do tutor a serem validados.
+     * @throws ValidacaoException Se o telefone já estiver registrado.
+     */
+    @Override
+    public void validation(TutorRegistroDTO tutorRegistroDTO) {
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        if (tutorRepository.existsByTelefone(tutorRegistroDTO.telefone())) {</span>
+<span class="fc" id="L36">            throw new ValidacaoException(&quot;Telefone já cadastrado para outro tutor&quot;);</span>
+        }
+<span class="fc" id="L38">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
