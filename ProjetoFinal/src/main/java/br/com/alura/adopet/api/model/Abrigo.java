@@ -54,8 +54,7 @@ public class Abrigo {
      * em cascata, como persistência e remoção. O carregamento é feito com eager fetching
      * para garantir que os pets sejam carregados juntamente com o abrigo.</p>
      */
-    @OneToMany(mappedBy = "abrigo", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @OneToMany(mappedBy = "abrigo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Pet> pets;
 
     /**

@@ -16,7 +16,6 @@ public record TutorRegistroDTO(
          * Este campo é obrigatório e não pode estar em branco.
          */
         @NotBlank
-        @Column(name = "nome")
         String nome,
 
         /**

@@ -32,7 +32,7 @@ public class ValidacaoTelefoneRegistradoTutor implements ValidacaoRegistroTutor 
      */
     @Override
     public void validation(TutorRegistroDTO tutorRegistroDTO) {
-        if (tutorRepository.existsByEmail(tutorRegistroDTO.email())) {
+        if (tutorRepository.existsByTelefone(tutorRegistroDTO.telefone())) {
             throw new ValidacaoException("Telefone já cadastrado para outro tutor");
         }
     }

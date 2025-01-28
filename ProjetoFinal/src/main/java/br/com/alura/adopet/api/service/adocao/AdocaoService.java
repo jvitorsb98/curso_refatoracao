@@ -9,6 +9,8 @@ import br.com.alura.adopet.api.model.Tutor;
 import br.com.alura.adopet.api.repository.AdocaoRepository;
 import br.com.alura.adopet.api.repository.PetRepository;
 import br.com.alura.adopet.api.repository.TutorRepository;
+import br.com.alura.adopet.api.service.adocao.validacoes.aprovar.ValidacaoSolicitacaoAprovar;
+import br.com.alura.adopet.api.service.adocao.validacoes.reprovar.ValidacaoSolicitacaoReprovar;
 import br.com.alura.adopet.api.service.email.EmailService;
 import br.com.alura.adopet.api.service.adocao.validacoes.register.*;
 import jakarta.validation.ValidationException;
@@ -36,16 +38,20 @@ public class AdocaoService {
     @Autowired
     private List<ValidacaoSolicitacaoAdocao> validacaoSolicitacaoAdocaoList;
 
+
+    @Autowired
+    private List<ValidacaoSolicitacaoAprovar> validacaoSolicitacaoAprovarList;
+
+    @Autowired
+    private List<ValidacaoSolicitacaoReprovar> validacaoSolicitacaoReprovarList;
+
     public void solicitar(SolicitacaoAdocaoDTO solicitacaoAdocaoDTO) throws ValidationException {
         // Validação das solicitações de adoção
         validacaoSolicitacaoAdocaoList.forEach(v -> v.validar(solicitacaoAdocaoDTO));
 
         // Verificação do Pet e Tutor
-        Pet pet = petRepository.findById(solicitacaoAdocaoDTO.idPet())
-                .orElseThrow(() -> new ValidationException("Pet não encontrado."));
-        Tutor tutor = tutorRepository.findById(solicitacaoAdocaoDTO.idTutor())
-                .orElseThrow(() -> new ValidationException("Tutor não encontrado."));
-
+        Pet pet = petRepository.getReferenceById(solicitacaoAdocaoDTO.idPet());
+        Tutor tutor = tutorRepository.getReferenceById(solicitacaoAdocaoDTO.idTutor());
         // Criação e salvamento da adoção
         Adocao adocao = new Adocao(tutor, pet, solicitacaoAdocaoDTO.motivo());
         repository.save(adocao);
@@ -57,8 +63,10 @@ public class AdocaoService {
     }
 
     public void aprovar(AprovacaoAdocaoDTO aprovacaoAdocaoDTO) {
-        Adocao adocao = repository.findById(aprovacaoAdocaoDTO.idAdocao())
-                .orElseThrow(() -> new ValidationException("Adoção não encontrada."));
+
+        validacaoSolicitacaoAprovarList.forEach(v -> v.validar(aprovacaoAdocaoDTO));
+
+        Adocao adocao = repository.getReferenceById(aprovacaoAdocaoDTO.idAdocao());
         adocao.aprovar();
 
         // Envio de e-mail após aprovação
@@ -70,8 +78,10 @@ public class AdocaoService {
     }
 
     public void reprovar(ReprovacaoAdocaoDTO reprovacaoAdocao) {
-        Adocao adocao = repository.findById(reprovacaoAdocao.idAdocao())
-                .orElseThrow(() -> new ValidationException("Adoção não encontrada."));
+
+        validacaoSolicitacaoReprovarList.forEach(v -> v.validar(reprovacaoAdocao));
+
+        Adocao adocao = repository.getReferenceById(reprovacaoAdocao.idAdocao());
         adocao.reprovar(reprovacaoAdocao.justificativa());
 
         // Envio de e-mail após reprovação
